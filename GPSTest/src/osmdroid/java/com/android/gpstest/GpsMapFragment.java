@@ -31,6 +31,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.android.gpstest.map.MapViewModelController;
 import com.android.gpstest.map.OnMapClickListener;
 import com.android.gpstest.util.MapUtils;
@@ -39,7 +44,6 @@ import com.android.gpstest.util.MathUtils;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.MapTileIndex;
@@ -54,11 +58,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import static com.android.gpstest.map.MapConstants.ALLOW_GROUND_TRUTH_CHANGE;
 import static com.android.gpstest.map.MapConstants.CAMERA_INITIAL_ZOOM;
@@ -206,29 +205,41 @@ public class GpsMapFragment extends Fragment implements GpsTestListener, MapView
 
     private void setMapBoxTileSource(String mapType) throws UnsupportedEncodingException {
         // To prevent web scrapers from easily finding the key, we store it encoded
-        final String keyBase64 = "cGsuZXlKMUlqb2lZbUZ5WW1WaGRTSXNJbUVpT2lKamFuUjJjRE40YW1veGVteGpORE50TW5kblkyd3djWFpuSW4wLm1OQ3N6OWxXWVNZWVRfZDVaX19ZTWc=";
+        final String keyBase64 = "amdXY2VockFndXc2R1R1U3dQTmk=";
         final String key = MathUtils.fromBase64(keyBase64);
 
         final ITileSource tileSource;
         if (mapType.equals(MAP_TYPE_SATELLITE)) {
-            tileSource = new MapBoxTileSource();
-            ((MapBoxTileSource) tileSource).setAccessToken(key);
-            ((MapBoxTileSource) tileSource).setMapboxMapid(mapType);
-        } else {
-            // We're using a Mapbox style, which isn't directly supported by OSMDroid due to a different URL format than Map IDs, so build the URL ourselves
-            tileSource = new OnlineTileSourceBase("MapBox Streets", 1, 19, 256, "",
-                    new String[] { "https://api.mapbox.com/styles/v1/" + MAP_TYPE_STREETS + "/tiles/256/"}) {
+            // Use the Maptiler format
+            tileSource = new OnlineTileSourceBase("Maptiler Satellite Hybrid", 1, 19, 256, "",
+                    new String[]{"https://api.maptiler.com/maps/hybrid/"}) {
                 @Override
                 public String getTileURLString(long pMapTileIndex) {
                     return getBaseUrl()
                             + MapTileIndex.getZoom(pMapTileIndex)
                             + "/" + MapTileIndex.getX(pMapTileIndex)
                             + "/" + MapTileIndex.getY(pMapTileIndex)
-                            + "@2x?access_token=" + key;
+                            + "@2x.jpg?key=" + key;
                 }
             };
+            mMap.setTileSource(tileSource);
+        } else {
+            // Below is commented out due to Mapbox billing - until this is resolved, use default OSMDroid tiles
+
+            // We're using a Mapbox style, which isn't directly supported by OSMDroid due to a different URL format than Map IDs, so build the URL ourselves
+//            tileSource = new OnlineTileSourceBase("MapBox Streets", 1, 19, 256, "",
+//                    new String[] { "https://api.mapbox.com/styles/v1/" + MAP_TYPE_STREETS + "/tiles/256/"}) {
+//                @Override
+//                public String getTileURLString(long pMapTileIndex) {
+//                    return getBaseUrl()
+//                            + MapTileIndex.getZoom(pMapTileIndex)
+//                            + "/" + MapTileIndex.getX(pMapTileIndex)
+//                            + "/" + MapTileIndex.getY(pMapTileIndex)
+//                            + "@2x?access_token=" + key;
+//                }
+//            };
+//            mMap.setTileSource(tileSource);
         }
-        mMap.setTileSource(tileSource);
     }
 
     public void gpsStart() {

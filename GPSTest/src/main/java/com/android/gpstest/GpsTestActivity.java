@@ -18,9 +18,9 @@
 package com.android.gpstest;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,6 +62,17 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+
 import com.android.gpstest.map.MapConstants;
 import com.android.gpstest.util.GpsTestUtil;
 import com.android.gpstest.util.LocationUtils;
@@ -71,16 +82,6 @@ import com.android.gpstest.util.PreferenceUtils;
 import com.android.gpstest.util.UIUtils;
 
 import java.util.ArrayList;
-
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentManager;
 
 import static android.content.Intent.createChooser;
 import static com.android.gpstest.NavigationDrawerFragment.NAVDRAWER_ITEM_ACCURACY;
@@ -268,6 +269,14 @@ public class GpsTestActivity extends AppCompatActivity
         setupNavigationDrawer();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        // If another app is passing in a ground truth location, recreate the activity to initialize an existing instance
+        if (IOUtils.isShowRadarIntent(intent)) {
+            recreateApp(intent);
+        }
+    }
+
     /**
      * Save instance state locally so we can use it after the permission callback
      * @param savedInstanceState instance state to save
@@ -315,7 +324,7 @@ public class GpsTestActivity extends AppCompatActivity
             String currentLanguage = PreferenceUtils.getString(getString(R.string.pref_key_language));
             if (!currentLanguage.equals(mInitialLanguage)) {
                 mInitialLanguage = currentLanguage;
-                recreateApp();
+                recreateApp(null);
             }
         }
         mBenchmarkController.onResume();
@@ -325,9 +334,15 @@ public class GpsTestActivity extends AppCompatActivity
      * Destroys and recreates the main activity in a new process.  If we don't use a new process,
      * the map state and Accuracy ground truth location TextViews get messed up with mixed locales
      * and partial state retention.
+     * @param currentIntent the Intent to pass to the re-created app, or null if there is no intent to pass
      */
-    void recreateApp() {
+    void recreateApp(Intent currentIntent) {
         Intent i = new Intent(this, GpsTestActivity.class);
+        if (IOUtils.isShowRadarIntent(currentIntent)) {
+            // If we're creating the app because we got a SHOW_RADAR intent, copy over the intent action and extras
+            i.setAction(currentIntent.getAction());
+            i.putExtras(currentIntent.getExtras());
+        }
         startActivity(i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
         // Restart process to destroy and recreate everything
         System.exit(0);
@@ -436,7 +451,7 @@ public class GpsTestActivity extends AppCompatActivity
             removeGnssMeasurementsListener();
         }
         // Check if the user has chosen to stop GNSS whenever app is in background
-        if (Application.getPrefs().getBoolean(getString(R.string.pref_key_stop_gnss_in_background), false)) {
+        if (!isChangingConfigurations() && Application.getPrefs().getBoolean(getString(R.string.pref_key_stop_gnss_in_background), false)) {
             gpsStop();
         }
 
@@ -795,6 +810,7 @@ public class GpsTestActivity extends AppCompatActivity
         mGpsTestListeners.add(listener);
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void gpsStart() {
         if (mLocationManager == null || mProvider == null) {
             return;
@@ -874,6 +890,7 @@ public class GpsTestActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.N)
     private void addGnssStatusListener() {
         mGnssStatusListener = new GnssStatus.Callback() {
@@ -913,6 +930,7 @@ public class GpsTestActivity extends AppCompatActivity
         mLocationManager.registerGnssStatusCallback(mGnssStatusListener);
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void addGnssMeasurementsListener() {
         mGnssMeasurementsListener = new GnssMeasurementsEvent.Callback() {
@@ -962,8 +980,10 @@ public class GpsTestActivity extends AppCompatActivity
         mLocationManager.registerGnssMeasurementsCallback(mGnssMeasurementsListener);
     }
 
+    @SuppressLint("MissingPermission")
     private void addLegacyStatusListener() {
         mLegacyStatusListener = new GpsStatus.Listener() {
+            @SuppressLint("MissingPermission")
             @Override
             public void onGpsStatusChanged(int event) {
                 mLegacyStatus = mLocationManager.getGpsStatus(mLegacyStatus);
@@ -1028,6 +1048,7 @@ public class GpsTestActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void addNmeaListenerAndroidN() {
         if (mOnNmeaMessageListener == null) {
@@ -1048,6 +1069,7 @@ public class GpsTestActivity extends AppCompatActivity
         mLocationManager.addNmeaListener(mOnNmeaMessageListener);
     }
 
+    @SuppressLint("MissingPermission")
     private void addLegacyNmeaListener() {
         if (mLegacyNmeaListener == null) {
             mLegacyNmeaListener = new GpsStatus.NmeaListener() {
@@ -1135,25 +1157,20 @@ public class GpsTestActivity extends AppCompatActivity
         new AlertDialog.Builder(this)
                 .setMessage(getString(R.string.enable_gps_message))
                 .setPositiveButton(getString(R.string.enable_gps_positive_button),
-                        new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent(
-                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(intent);
-                            }
+                        (dialog, which) -> {
+                            Intent intent = new Intent(
+                                    Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
                         }
                 )
                 .setNegativeButton(getString(R.string.enable_gps_negative_button),
-                        new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
+                        (dialog, which) -> {
                         }
                 )
                 .show();
     }
 
+    @SuppressLint("MissingPermission")
     private void checkTimeAndDistance(SharedPreferences settings) {
         double tempMinTimeDouble = Double
                 .valueOf(settings.getString(getString(R.string.pref_key_gps_min_time), "1"));
@@ -1486,8 +1503,8 @@ public class GpsTestActivity extends AppCompatActivity
         TextView textView = (TextView) getLayoutInflater().inflate(R.layout.whats_new_dialog, null);
         textView.setText(R.string.main_help_whatsnew);
 
-        androidx.appcompat.app.AlertDialog.Builder builder
-                = new androidx.appcompat.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder
+                = new AlertDialog.Builder(this);
         builder.setTitle(R.string.main_help_whatsnew_title);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setView(textView);
@@ -1503,7 +1520,7 @@ public class GpsTestActivity extends AppCompatActivity
 
     @SuppressWarnings("deprecation")
     private Dialog createHelpDialog() {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_help);
         int options = R.array.main_help_options;
         builder.setItems(options,
@@ -1539,7 +1556,7 @@ public class GpsTestActivity extends AppCompatActivity
         Drawable icon = getResources().getDrawable(R.drawable.ic_delete);
         DrawableCompat.setTint(icon, getResources().getColor(R.color.colorPrimary));
 
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(R.string.clear_assist_warning_title)
                 .setIcon(icon)
                 .setCancelable(false)
@@ -1570,7 +1587,7 @@ public class GpsTestActivity extends AppCompatActivity
      * ActivityCompat.shouldShowRequestPermissionRationale() always returns false.
      */
     private void showLocationPermissionDialog() {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_location_permission)
                 .setMessage(R.string.text_location_permission)
                 .setCancelable(false)

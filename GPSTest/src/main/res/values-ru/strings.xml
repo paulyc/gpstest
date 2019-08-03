@@ -17,8 +17,6 @@
 */
 -->
 <resources>
-    <string name="app_name">GPSTest</string>
-
     <!-- Fragments -->
     <string name="gps_status_title">Состояние</string>
     <string name="gps_map_title">Карта</string>
@@ -77,7 +75,7 @@
     <string name="pdop_label">Сн. т.:</string>
     <string name="hvdop_label">Г/В сн.т.:</string>
 
-    <string name="gps_prn_column_label">Обозн.</string>
+    <string name="gps_prn_column_label">Об.</string>
     <string name="gnss_flag_image_label">ССН</string>
     <string name="sbas_flag_image_label">ССДК</string>
     <string name="gps_carrier_column_label">НЧ</string>
@@ -102,7 +100,7 @@
     <string name="yes">ДА</string>
     <string name="no">НЕТ</string>
     <string name="gnss_not_available">Недоступны спутники спутниковой системы навигации (ССН)</string>
-    <string name="sbas_not_available">Недоступны спутники спктниковой системы дифференциальной коррекции (ССДК)</string>
+    <string name="sbas_not_available">Недоступны спутники спутниковой системы дифференциальной коррекции (ССДК)</string>
     <string name="menu_option_sort_by">Сортировать по</string>
 
     <!-- Map view -->
@@ -224,7 +222,7 @@
     <string name="pref_gps_min_distance_invalid_entry">Это должно быть число</string>
 
     <string name="pref_stop_gnss_in_background_title">Отключать навигацию в фоне</string>
-    <string name="pref_stop_gnss_in_background_summary">Если отмечено, при переключении приложения в фоновый режим, навигация будет отключаться (например, если вы нажали кнопку Дом или переключились на другое приложение)
+    <string name="pref_stop_gnss_in_background_summary">Если отмечено, приложение, перейдя в фоновый режим, отключит навигацию (например, если вы нажали кнопку Дом или перешли в другое приложение)
     </string>
 
     <string name="pref_analyze_gps_accuracy_title">Анализировать погрешность ССН</string>
@@ -276,10 +274,6 @@
     <string name="pref_language_summary">Устанавливает язык приложения вручную</string>
     <string name="pref_language_dialog_title">Выберите язык</string>
 
-    <!-- Units -->
-    <string name="feet_abbreviation">фут.</string>
-    <string name="meters_abbreviation">м</string>
-
     <!-- Help -->
     <string name="title_help">Помощь</string>
 
@@ -311,7 +305,7 @@
         <b># Сп.</b>
         - число спутников используемых в определении координат / число спутников в зоне видимости\n&#8226;\u0020
         <b>Сн. т.</b>
-        - Снижение точности положения (3D) (requires NMEA support)\n&#8226;\u0020
+        - Снижение точности положения (3D) (требует поддержки NMEA)\n&#8226;\u0020
         <b>Г/В сн.т.</b>
         - Горизонтальное / вертикальное снижение точности (требует поддержки NMEA)\n&#8226;\u0020
         <b>TTFF</b>

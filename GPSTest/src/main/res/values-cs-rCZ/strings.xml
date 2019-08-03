@@ -18,8 +18,6 @@
 */
 -->
 <resources>
-    <string name="app_name">GPSTest</string>
-
     <!-- Fragments -->
     <string name="gps_status_title">POLOHA</string>
     <string name="gps_map_title">MAPA</string>
@@ -63,8 +61,8 @@
     <string name="gps_longitude_label">Z. délka:</string>
     <string name="gps_fix_time_label">Čas:</string>
     <string name="gps_ttff_label">TTFF:</string>
-    <string name="gps_altitude_label">N. výška (G):</string>
-    <string name="gps_altitude_msl_label">N. výška (M):</string>
+    <string name="gps_altitude_label">Výška (G):</string>
+    <string name="gps_altitude_msl_label">Výška (M):</string>
     <string name="gps_accuracy_label">Přesnost:</string>
     <string name="gps_hor_and_vert_accuracy_label">Přesn. (H/V):</string>
     <string name="gps_speed_label">Rychlost:</string>
@@ -122,8 +120,10 @@
     <string name="measured_error_graph_label">Chyba měření</string>
     <string name="estimated_accuracy_graph_label">Přesnost odhadnuta HW</string>
     <string name="horizontal_vertical_error_label">Chyba přesnosti H/V</string>
-    <string name="avg_error_label">Průměr %1$d opraven</string>
+    <string name="avg_error_label">Průměr %1$d opr.</string>
     <string name="fix_number">Průměr</string>
+    <string name="show_radar_valid_location">Skutečná poloha stanovená jinou aplikací</string>
+    <string name="show_radar_invalid_location">Skutečná poloha stanovená jinou aplikací je neplatná</string>
 
     <!-- Sky view -->
     <string name="sky_legend_title">Popis</string>
@@ -259,10 +259,6 @@
     <string name="pref_language_summary">Nastavte jazyk prostředí aplikace.</string>
     <string name="pref_language_dialog_title">Vyberte jazyk</string>
 
-    <!-- Units -->
-    <string name="feet_abbreviation">ft</string>
-    <string name="meters_abbreviation">m</string>
-
     <!-- Help -->
     <string name="title_help">Nápověda</string>
 
@@ -345,11 +341,13 @@
         &#8226;\u0020 <b>Mike Lockwood</b> - original developer for v1.x\n
         &#8226;\u0020 <b>Sean Barbeau</b> - developer for v2.x and higher\n
         &#8226;\u0020 GPSTest launcher icon is derived from the Android Material Design \"satellite\" icon, licensed by Google under Apache v2.0.  Other Google material design icons are also used under Apache v2.0.\n
-        &#8226;\u0020 Chinese translation provided by wangkf, liuyunli, SakuraSa233 &amp; Skimige\n
-        &#8226;\u0020 German translation provided by SIRSteiner\n
-        &#8226;\u0020 Dutch translation provided by Dennis Dolman\n
-        &#8226;\u0020 Greek translation provided by Jimmy Golfi\n
-        &#8226;\u0020 Japanese translation provided by SakuraSa233\n
-        &#8226;\u0020 Czech translation provided by llzn.cz\n
+       &#8226;\u0020 Chinese translation provided by wangkf, liuyunli, SakuraSa233 &amp; Skimige\n
+      &#8226;\u0020 German translation provided by SIRSteiner\n
+      &#8226;\u0020 Dutch translation provided by Dennis Dolman\n
+      &#8226;\u0020 Greek translation provided by Jimmy Golfi\n
+      &#8226;\u0020 Japanese translation provided by SakuraSa233\n
+      &#8226;\u0020 Czech translation provided by llzn.cz\n
+      &#8226;\u0020 Italian translation provided by Giolly90\n
+      &#8226;\u0020 Spanish translation provided by Sergi Pellicer\n
     </string>
 </resources>

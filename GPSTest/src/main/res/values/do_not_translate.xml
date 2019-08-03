@@ -19,6 +19,7 @@
 -->
 <resources>
     <!-- Strings in this file should NOT be translated -->
+    <string name="app_name">GPSTest</string>
 
     <!-- Values and units display - Status -->
     <string name="gps_latitude_value">%1$.7f\u00B0</string>
@@ -45,6 +46,8 @@
     <string name="hvdop_value">%1$.1f/%2$.1f</string>
     <string name="gps_elevation_column_value">%1$.1f\u00B0</string>
     <string name="gps_azimuth_column_value">%1$.1f\u00B0</string>
+    <string name="feet_abbreviation">ft</string>
+    <string name="meters_abbreviation">m</string>
 
     <!-- Values and units display - Sky View -->
     <string name="sky_legend_cn0_low">10</string>
@@ -65,6 +68,12 @@
     <string name="benchmark_alt">%1$.1f</string>
     <string name="benchmark_error">%1$.2f</string>
     <string name="benchmark_header_error_divider">/</string>
+
+    <!-- RADAR intent used by apps like BenchMap to set the ground truth location in GPSTest -->
+    <string name="show_radar_intent">com.google.android.radar.SHOW_RADAR</string>
+    <string name="radar_lat_key">latitude</string>
+    <string name="radar_lon_key">longitude</string>
+    <string name="radar_alt_key">altitude</string>
 
     <!-- Preference keys -->
     <string name="pref_key_default_sat_sort">preference_default_sat_sort</string>
@@ -175,6 +184,22 @@
         <item>3</item>
     </string-array>
 
+    <!-- Supported languages, must stay in-order with language_values -->
+    <string-array name="language_entries">
+        <item>English</item>
+        <item>中文</item>
+        <item>Čeština</item>
+        <item>Nederlands</item>
+        <item>Deutsch</item>
+        <item>Ελληνικά</item>
+        <item>Italiano</item>
+        <item>日本語</item>
+        <item>Русский</item>
+        <item>Español</item>
+        <item>Indonesia</item>
+        <item>Polskie</item>
+    </string-array>
+
     <!-- Supported languages, must stay in-order with language_entries -->
     <string-array name="language_values">
         <item>en</item>
@@ -186,5 +211,8 @@
         <item>it</item>
         <item>ja</item>
         <item>ru</item>
+        <item>es</item>
+        <item>in</item>
+        <item>pl</item>
     </string-array>
 </resources>
